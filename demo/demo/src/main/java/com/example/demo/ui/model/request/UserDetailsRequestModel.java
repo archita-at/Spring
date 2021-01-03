@@ -1,24 +1,23 @@
 package com.example.demo.ui.model.request;
 
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 public class UserDetailsRequestModel {
     //hibernate bean validation constraints
-    @NotBlank(message="First name cannot be null")
+    @NotBlank(message = "First Name cannot be blank")
     private String firstName;
 
-    @NotNull(message="Last name cannot be null")
+    @NotBlank(message = "Last Name cannot be blank")
     private String lastName;
 
-    @NotNull(message="Email cannot be null")
-    @Email
+    @NotBlank(message = "Email cannot be blank")
+    @Email(message = "Incorrect email address")
     private String email;
 
-    @NotNull(message="Password cannot be null")
-    @Size(min=8,max=16, message="Password must be equal or greater than 8 characters and less than 16 characters")
+    @NotBlank(message = "Password cannot be blank")
+    @Size(min = 8, max = 16, message = "Password should be between 8 to 16 characters")
     private String password;
 
     public String getFirstName() {
