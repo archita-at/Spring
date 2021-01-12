@@ -1,15 +1,19 @@
 package com.example.demo.ui.controller;
 
-import java.util.HashMap;
+//import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
+//import java.util.UUID;
 
 import javax.validation.Valid;
 
+//import com.example.demo.exceptions.UserServiceException;
 import com.example.demo.ui.model.request.UpdateUserDetailsRequestModel;
 import com.example.demo.ui.model.request.UserDetailsRequestModel;
 import com.example.demo.ui.model.response.UserRest;
+import com.example.demo.userservice.UserService;
+//import com.example.demo.userservice.impl.UserServiceImpl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +32,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     Map<String, UserRest> users;
+
+    //for dependency injection
+    @Autowired //to autowire user service implementation
+    UserService userService;
     
     @GetMapping
     public String getUsers(@RequestParam(value="page", defaultValue="1") int page, 
@@ -42,6 +50,7 @@ public class UserController {
                     MediaType.APPLICATION_JSON_VALUE
                 })
     public ResponseEntity<UserRest> getUser(@PathVariable String userId){
+        //if(true) throw new UserServiceException("A user service exception is thrown");
         if(users.containsKey(userId)){
             return new ResponseEntity<>(users.get(userId), HttpStatus.OK);
         }
@@ -59,7 +68,7 @@ public class UserController {
             MediaType.APPLICATION_JSON_VALUE
         })
     public ResponseEntity<UserRest> createUser(@Valid @RequestBody UserDetailsRequestModel userDetails){
-        UserRest returnValue = new UserRest();
+        /* UserRest returnValue = new UserRest();
         returnValue.setEmail(userDetails.getEmail());
         returnValue.setFirstName(userDetails.getFirstName());
         returnValue.setLastName(userDetails.getLastName());
@@ -68,8 +77,11 @@ public class UserController {
         returnValue.setUserId(userId);
 
         if(users== null) users = new HashMap<>();
-        users.put(userId, returnValue);
+        users.put(userId, returnValue); */
+        
+        //UserRest returnValue = new UserServiceImpl().createUser(userDetails); //Direct Dependency
 
+        UserRest returnValue = userService.createUser(userDetails);
         return new ResponseEntity<UserRest>(returnValue, HttpStatus.OK);
     }
     
@@ -90,8 +102,9 @@ public class UserController {
         return storedUserDetails;
     }
 
-    @DeleteMapping
-    public String deleteUser(){
-        return "deleteUser was called";
+    @DeleteMapping(path="/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable String id){
+        users.remove(id);
+        return ResponseEntity.noContent().build();
     }
 }
